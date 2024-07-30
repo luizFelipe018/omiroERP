@@ -11,4 +11,5 @@ urlpatterns = [
     path('search_product/',views.search_product,name="search_product"),
     path('register_quantity_product/',views.register_quantity_product,name="register_quantity_product"),
     path('finance/',views.finance,name="finance"),
+    path('api/get-product/',views.API_get_product,name="API_get_product"),
 ]

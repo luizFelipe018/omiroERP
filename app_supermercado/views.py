@@ -1,3 +1,4 @@
+from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from .models import Products
 from django.contrib import messages
@@ -80,3 +81,24 @@ def register_quantity_product(request):
 
 def finance(request):
    return render(request, 'usuarios/finance_control.html')
+
+
+""" API endpoints
+"""
+def API_get_product(request):
+    if request.method != 'GET':
+        return HttpResponse('utilize requisições "GET"', status=400)
+
+    code_bar = request.GET.get('code_bar', None)
+    if code_bar == None:
+        return HttpResponse('não foi possivel obter o código de barra', status=400)
+
+    product = None
+    try:
+        product = Products.objects.get(code_bar=code_bar)
+    except:
+        return HttpResponse('produto não encontrado', status=404)
+
+    # we have access to product here
+
+    return HttpResponse('produto encontrado', status=200)
