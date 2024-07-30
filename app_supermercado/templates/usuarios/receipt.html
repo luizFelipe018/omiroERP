@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recebimento</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .title {
+            font-size: 2em;
+            margin-bottom: 20px;
+            color: #333;
+            text-align: center;
+        }
+        .form {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        .form input {
+            width: 300px;
+            height: 30px;
+            background-color: #eee;
+            border: none;
+            border-radius: 6px;
+            color: #303030;
+            padding: 10px;
+            outline: none;
+            font-size: 14px;
+        } 
+        .btn {
+            display: block;
+            margin: 20px auto;
+            width: 200px;
+            height: 40px;
+            background-color: #0B81C2;
+            border: none;
+            border-radius: 6px;
+            color: #eee;
+            font-size: 20px;
+            cursor: pointer;
+        }
+        .btn-back {
+            padding: 10px 20px;
+            background-color: #0B81C2;
+            border: none;
+            border-radius: 6px;
+            color: #eee;
+            font-size: 15px;
+            margin: 20px 0 0 0;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        .message {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 6px;
+            font-size: 16px;
+            text-align: center;
+        }
+        .message.error {
+            background-color: #ff0019;
+            color: #fff;
+        }
+        .message.success {
+            background-color: #3ea055;
+            color: #fff;
+        }
+
+    h2{
+        color: #303030;
+    }
+    </style>
+</head>
+<body>
+    <section class="container">
+        <h1 class="title">Recebimento</h1>
+        <a href="{% url 'home' %}" class="btn-back">Voltar</a>
+        <div class="form">
+            <form action="{% url 'register_quantity_product' %}" method="POST">
+                {% csrf_token %}
+                <h2>Codigo de barra</h2>
+                <input type="text" name="code_bar" required>
+                <h2>Quantidade</h2>
+                <input type="number" name="quantity" required>
+                <button type="submit" class="btn">Inserir</button>
+            </form>
+            {% if messages %}
+                <div class="message {% if messages.tags == 'error' %}success{% else %}error{% endif %}">
+                    {% for message in messages %}
+                        {{ message }}
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+    </section>
+</body>
+</html>
