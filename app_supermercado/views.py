@@ -83,6 +83,10 @@ def finance(request):
    return render(request, 'usuarios/finance_control.html')
 
 
+def purchase(request):
+    return render(request, 'usuarios/purchase.html')
+
+
 """ API endpoints
 """
 def API_get_product(request, code_bar):

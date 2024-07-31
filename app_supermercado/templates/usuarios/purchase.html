@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Compra</title>
+    </head>
+    <body>
+        <section class="container">
+            <h1 class="title">Página de Compra</h1>
+            <form id="form">
+                {% csrf_token %}
+                <div class="form">
+                    <h2>Código de Barra</h2>
+                    <input type="number" name="code_bar" required>
+                    <h2>Nome</h2>
+                    <input type="text" name="name">
+                    <h2>Preço</h2>
+                    <input type="number" step="0.01" name="price">
+                </div>
+            </form>
+        </section>
+        <script>
+            (function() {
+                const form = document.getElementById("form");
+                const [_, codeBarInput] = form.getElementsByTagName("input");
+
+                async function getProduct() {
+                    const data = new FormData(form);
+                    const codeBar = data.get('code_bar')
+
+                    const origin = window.location.origin;
+                    const path = origin + '/api/get-product/' + codeBar;
+                    const response = await fetch(path);
+
+                    const text = await response.text();
+                    window.alert(text);
+                }
+
+                codeBarInput.addEventListener("keydown", (e) => {
+                    if (e.key === "Enter") {
+                        getProduct();
+                    }
+                });
+            })();
+        </script>
+        <style>
+            * {
+                padding: 0;
+                margin: 0;
+                box-sizing: border-box;
+                font-family: sans-serif;
+            }
+
+            .container {
+                width: 100%;
+                height: 100vh;
+                background-color: #fff;
+            }
+
+            .title {
+                font-size: 40px;
+                text-align: center;
+                margin: 40px 0 50px 0 ;
+                color: #303030;
+            }
+
+            h2{
+                color: #303030;
+            }
+
+            .form {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .form input {
+                width: 300px;
+                height: 40px;
+                background-color: #eee;
+                border: none;
+                border-radius: 6px;
+                color: #303030;
+                padding: 10px;
+                outline: none;
+                font-size: 14px;
+            } 
+
+            .btn {
+                width: 200px;
+                height: 40px;
+                background-color: #0B81C2;
+                border: none;
+                border-radius: 6px;
+                color: #eee;
+                font-size: 20px;
+                margin: 20px 0 0 0;
+                cursor: pointer;
+            }
+        </style>
+    </body>
+</html>
