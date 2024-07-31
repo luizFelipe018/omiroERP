@@ -12,18 +12,24 @@
                 {% csrf_token %}
                 <div class="form">
                     <h2>Código de Barra</h2>
-                    <input type="number" name="code_bar" required>
-                    <h2>Nome</h2>
-                    <input type="text" name="name">
+                    <input id="code-bar-input" type="number" name="code_bar" required>
+                    <h2>Produto</h2>
+                    <input id="name-input" type="text" readonly>
                     <h2>Preço</h2>
-                    <input type="number" step="0.01" name="price">
+                    <input id="price-input" type="number" readonly>
                 </div>
             </form>
         </section>
         <script>
             (function() {
                 const form = document.getElementById("form");
-                const [_, codeBarInput] = form.getElementsByTagName("input");
+                const codeBarInput = document.getElementById("code-bar-input");
+                const nameInput = document.getElementById("name-input");
+                const priceInput = document.getElementById("price-input");
+
+                codeBarInput.value = "";
+                nameInput.value = "";
+                priceInput.value = "";
 
                 async function getProduct() {
                     const data = new FormData(form);
@@ -31,10 +37,18 @@
 
                     const origin = window.location.origin;
                     const path = origin + '/api/get-product/' + codeBar;
-                    const response = await fetch(path);
 
-                    const text = await response.text();
-                    window.alert(text);
+                    const response = await fetch(path);
+                    const jsonData = await response.json();
+
+                    if (jsonData.error) {
+                        window.alert(jsonData.error);
+                        return;
+                    }
+
+                    const product = jsonData.value;
+                    nameInput.value = product.name;
+                    priceInput.value = product.price;
                 }
 
                 codeBarInput.addEventListener("keydown", (e) => {
@@ -54,7 +68,6 @@
 
             .container {
                 width: 100%;
-                height: 100vh;
                 background-color: #fff;
             }
 
@@ -65,7 +78,7 @@
                 color: #303030;
             }
 
-            h2{
+            h2 {
                 color: #303030;
             }
 
