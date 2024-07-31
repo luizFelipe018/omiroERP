@@ -1,7 +1,7 @@
-from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from .models import Products
 from django.contrib import messages
+from django.http import JsonResponse
 
 def home(request):
     return render(request, 'usuarios/home.html')
@@ -91,14 +91,18 @@ def purchase(request):
 """
 def API_get_product(request, code_bar):
     if request.method != 'GET':
-        return HttpResponse('utilize requisições "GET"', status=400)
+        return JsonResponse({'value': None, 'error': 'método de requisição inválido'})
 
     product = None
     try:
         product = Products.objects.get(code_bar=code_bar)
     except:
-        return HttpResponse('produto não encontrado', status=404)
+        return JsonResponse({'value': None, 'error': 'produto não encontrado'})
 
-    # we have access to product here
+    # TODO: Use Django serializers to automatically turn Models into dictionaries.
+    productDict = {
+            "name": product.name,
+            "price": product.price,
+            }
 
-    return HttpResponse('produto encontrado', status=200)
+    return JsonResponse({'value': productDict, 'error': ''})
