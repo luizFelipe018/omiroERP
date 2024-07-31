@@ -85,13 +85,9 @@ def finance(request):
 
 """ API endpoints
 """
-def API_get_product(request):
+def API_get_product(request, code_bar):
     if request.method != 'GET':
         return HttpResponse('utilize requisições "GET"', status=400)
-
-    code_bar = request.GET.get('code_bar', None)
-    if code_bar == None:
-        return HttpResponse('não foi possivel obter o código de barra', status=400)
 
     product = None
     try:
