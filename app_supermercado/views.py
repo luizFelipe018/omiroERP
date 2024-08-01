@@ -103,6 +103,7 @@ def API_get_product(request, code_bar):
     productDict = {
             "name": product.name,
             "price": product.price,
+            "codeBar": product.code_bar,
             }
 
     return JsonResponse({'value': productDict, 'error': ''})
