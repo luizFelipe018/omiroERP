@@ -3,33 +3,32 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Compra</title>
+        <title>Caixa</title>
     </head>
     <body>
         <section class="container">
-            <h1 class="title">Página de Compra</h1>
+            <h1 class="title">Caixa</h1>
             <form id="form">
-                {% csrf_token %}
-                <div class="form">
-                    <h2>Código de Barra</h2>
-                    <input id="code-bar-input" type="number" name="code_bar" required>
-                    <h2>Produto</h2>
-                    <input id="name-input" type="text" readonly>
-                    <h2>Preço</h2>
-                    <input id="price-input" type="number" readonly>
-                </div>
+                <label>Código:</label>
+                <input id="code-bar-input" type="number" name="code_bar" required>
+                <label>Produto:</label>
+                <input id="name-input" type="text" readonly>
+                <label>Preço:</label>
+                <input id="price-input" type="number" readonly>
             </form>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Nome</th>
-                        <th>Código de Barra</th>
-                        <th>Preço</th>
-                    </tr>
-                </thead>
-                <tbody id="product-table-body">
-                </tbody>
-            </table>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Produto</th>
+                            <th>Código</th>
+                            <th>Preço</th>
+                        </tr>
+                    </thead>
+                    <tbody id="product-table-body">
+                    </tbody>
+                </table>
+            </div>
         </section>
         <script>
             (function() {
@@ -97,81 +96,93 @@
             })();
         </script>
         <style>
+            /** General */
+            :root {
+                --bg: #fff;
+                --bg-hl-1: #eee;
+                --bg-hl-2: #ccc;
+                --accent: #0b81c2;
+                --padding: 12px;
+            }
+
             * {
-                padding: 0;
                 margin: 0;
+                padding: 0;
                 box-sizing: border-box;
                 font-family: sans-serif;
             }
 
+            /** Container */
             .container {
                 width: 100%;
-                padding: 0px 12px;
-                background-color: #fff;
-            }
-
-            .title {
-                font-size: 40px;
-                text-align: center;
-                margin: 40px 0 50px 0 ;
-                color: #303030;
-            }
-
-            h2 {
-                color: #303030;
-            }
-
-            .form {
+                height: 100vh;
                 display: flex;
-                align-items: center;
-                justify-content: center;
                 flex-direction: column;
-                gap: 1rem;
+                padding: var(--padding);
             }
 
-            .form input {
-                width: 300px;
-                height: 40px;
-                background-color: #eee;
+            /** Title */
+            .title {
+                color: #303030;
+                font-size: 40px;
+                padding: var(--padding) 0px;
+            }
+
+            /** Form */
+            form {
+                display: flex;
+                flex-direction: column;
+            }
+
+            form label {
+                color: #303030;
+                font-size: 18pt;
+                font-weight: 600;
+            }
+
+            form input {
+                width: 100%;
+                height: 2rem;
+                color: #303030;
+                outline: none;
                 border: none;
                 border-radius: 6px;
-                color: #303030;
-                padding: 10px;
-                outline: none;
-                font-size: 14px;
+                margin: var(--padding) 0px;
+                padding: 0px var(--padding);
+                border: 1px solid var(--bg-hl-2);
+                background-color: var(--bg-hl-1);
             } 
 
-            .btn {
-                width: 200px;
-                height: 40px;
-                background-color: #0B81C2;
-                border: none;
+            /** Table */
+            .table-container {
+                height: 100%;
+                overflow-y: scroll;
                 border-radius: 6px;
-                color: #eee;
-                font-size: 20px;
-                margin: 20px 0 0 0;
-                cursor: pointer;
+                border: 1px solid var(--accent);
             }
 
             table {
                 width: 100%;
                 border-collapse: collapse;
-                margin: 20px 0;
+            }
+
+            /** Add table head separators */
+            th:nth-child(-n+2) {
+                border-right: 1px solid var(--bg);
             }
 
             th, td {
                 padding: 12px;
-                text-align: left;
                 border-bottom: 1px solid #ddd;
             }
 
             th {
                 color: #ffffff;
-                background-color: #0B81C2;
+                background-color: var(--accent);
             }
 
             tr:nth-child(even) {
-                background-color: #f2f2f2;
+                background-color: var(--darker-soft);
             }
 
             tr:hover {
