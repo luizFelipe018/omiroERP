@@ -83,8 +83,8 @@ def finance(request):
    return render(request, 'usuarios/finance_control.html')
 
 
-def purchase(request):
-    return render(request, 'usuarios/purchase.html')
+def cashier(request):
+    return render(request, 'usuarios/cashier.html')
 
 
 """ API endpoints
@@ -103,7 +103,7 @@ def API_get_product(request, code_bar):
     productDict = {
             "name": product.name,
             "price": product.price,
-            "codeBar": product.code_bar,
+            "code": product.code_bar,
             }
 
     return JsonResponse({'value': productDict, 'error': ''})

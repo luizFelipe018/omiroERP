@@ -1,11 +1,11 @@
 (function() {
     const form = document.getElementById("form");
-    const codeBarInput = document.getElementById("code-bar-input");
+    const codeInput = document.getElementById("code-input");
     const nameInput = document.getElementById("name-input");
     const priceInput = document.getElementById("price-input");
     const productTableBody = document.getElementById("product-table-body");
 
-    codeBarInput.value = "";
+    codeInput.value = "";
     nameInput.value = "";
     priceInput.value = "";
 
@@ -13,15 +13,15 @@
         const tr = document.createElement("tr");
 
         const tdName = document.createElement("td");
-        const tdCodeBar = document.createElement("td");
+        const tdCode = document.createElement("td");
         const tdPrice = document.createElement("td");
 
         tdName.innerHTML = product.name;
-        tdCodeBar.innerHTML = product.codeBar;
+        tdCode.innerHTML = product.code;
         tdPrice.innerHTML = product.price;
 
         tr.appendChild(tdName);
-        tr.appendChild(tdCodeBar);
+        tr.appendChild(tdCode);
         tr.appendChild(tdPrice);
 
         return tr;
@@ -34,10 +34,10 @@
 
     async function getProduct() {
         const data = new FormData(form);
-        const codeBar = data.get('code_bar')
+        const code = data.get('code');
 
         const origin = window.location.origin;
-        const path = origin + '/api/get-product/' + codeBar;
+        const path = origin + '/api/get-product/' + code;
 
         const response = await fetch(path);
         const jsonData = await response.json();
@@ -55,7 +55,7 @@
         addProductIntoList(product, productTableBody);
     }
 
-    codeBarInput.addEventListener("keydown", (e) => {
+    codeInput.addEventListener("keydown", (e) => {
         if (e.key === "Enter") {
             getProduct();
         }
