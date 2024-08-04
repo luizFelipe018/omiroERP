@@ -1,13 +1,10 @@
 (function() {
     const form = document.getElementById("form");
+    const input = document.getElementById("input");
     const codeInput = document.getElementById("code-input");
     const nameInput = document.getElementById("name-input");
     const priceInput = document.getElementById("price-input");
     const productTableBody = document.getElementById("product-table-body");
-
-    codeInput.value = "";
-    nameInput.value = "";
-    priceInput.value = "";
 
     function createProductTableRow(product) {
         const tr = document.createElement("tr");
@@ -32,32 +29,55 @@
         table.appendChild(tableRow);
     }
 
-    async function getProduct() {
-        const data = new FormData(form);
-        const code = data.get('code');
-
+    async function getProduct(code) {
         const origin = window.location.origin;
         const path = origin + '/api/get-product/' + code;
-
         const response = await fetch(path);
-        const jsonData = await response.json();
-
-        if (jsonData.error) {
-            window.alert(jsonData.error);
-            return;
+        const data = await response.json();
+        if (data.error !== '') {
+            throw data.error;
         }
-
-        const product = jsonData.value;
-
-        nameInput.value = product.name;
-        priceInput.value = product.price;
-
-        addProductIntoList(product, productTableBody);
+        return data.value;
     }
 
-    codeInput.addEventListener("keydown", (e) => {
-        if (e.key === "Enter") {
-            getProduct();
+    async function addProduct(code) {
+        try {
+            const product = await getProduct(code);
+            codeInput.value = product.code;
+            nameInput.value = product.name;
+            priceInput.value = product.price;
+            addProductIntoList(product, productTableBody);
+            return true;
+        } catch (e) {
+            alert(e);
+            return false;
+        }
+    }
+
+    document.addEventListener('keydown', async (e) => {
+        switch (e.key) {
+            case 'Enter': {
+                const code = Number(input.value);
+                if (isNaN(code)) {
+                    alert('entrada inválida');
+                    break;
+                }
+                const found = await addProduct(code);
+                if (found) {
+                    input.value = '';
+                }
+            } break;
+            case 'Backspace': {
+                input.value = input.value.slice(0, -1);
+            } break;
+            default: {
+                input.value += e.key;
+            } break;
         }
     });
+
+    input.value = '';
+    codeInput.value = '';
+    nameInput.value = '';
+    priceInput.value = '';
 })();
