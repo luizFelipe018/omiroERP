@@ -40,7 +40,7 @@ function parse(stack, string) {
             const n = Number(c);
             const pop = stack.pop();
             if (pop?.type === 'number') {
-                stack.push(num(pop.value + n));
+                stack.push(num(pop.value * 10 + n));
                 break;
             } else if (pop) {
                 stack.push(pop);
