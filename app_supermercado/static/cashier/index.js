@@ -1,3 +1,5 @@
+import {assert} from "../toolbox.js";
+
 (function() {
     const form = document.getElementById("form");
     const input = document.getElementById("input");
@@ -39,7 +41,7 @@
                         stack.push(OpNumber(number));
                     } break;
                     default: {
-                        return console.error(`computeCommand: unhandled type: ${op?.type}`);
+                        assert(false, "unhandled type: " + op?.type);
                     } break;
                 }
             } else {
