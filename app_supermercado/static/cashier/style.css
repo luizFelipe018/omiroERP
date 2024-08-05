@@ -32,13 +32,33 @@
 
 /** Form */
 form {
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-gap: var(--padding);
+    grid-template: 1fr / repeat(3, 1fr);
+    padding-bottom: var(--padding);
+}
+
+form :nth-child(1) {
+    grid-column: 1 / span 3;
+}
+
+@media only screen and (max-width: 480px) {
+    form {
+        grid-template: repeat(4, 1fr) / 1fr;
+    }
+
+    form div {
+        grid-column: 1;
+    }
+
+    form :nth-child(1) {
+        grid-column: 1;
+    }
 }
 
 form label {
     color: #303030;
-    font-size: 18pt;
+    font-size: 16pt;
     font-weight: 600;
 }
 
@@ -49,10 +69,10 @@ form input {
     outline: none;
     border: none;
     border-radius: 6px;
-    margin: var(--padding) 0px;
     padding: 0px var(--padding);
     border: 1px solid var(--bg-hl-2);
     background-color: var(--bg-hl-1);
+    margin-top: calc(var(--padding)/2);
 } 
 
 /** Table */
