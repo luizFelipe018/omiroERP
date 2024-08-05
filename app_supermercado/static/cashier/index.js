@@ -1,4 +1,5 @@
 import {assert} from "../toolbox.js";
+import {executorUse, execute} from "./executor.js";
 
 (function() {
     const form = document.getElementById("form");
@@ -7,98 +8,6 @@ import {assert} from "../toolbox.js";
     const nameInput = document.getElementById("name-input");
     const priceInput = document.getElementById("price-input");
     const productTableBody = document.getElementById("product-table-body");
-
-    function OpNumber(value) {
-        return {
-            type: "number",
-            value,
-        };
-    }
-
-    function OpMultiply(value) {
-        return {
-            type: "multiply",
-            value,
-        };
-    }
-
-    async function computeCommand(cmd) {
-        const stack = [];
-        /** parse the command */
-        for (const ch of cmd) {
-            const number = Number(ch);
-            if (!isNaN(number)) {
-                const op = stack.pop();
-                switch (op?.type) {
-                    case undefined: {
-                        stack.push(OpNumber(number));
-                    } break;
-                    case 'number': {
-                        stack.push(OpNumber(op.value * 10 + number));
-                    } break;
-                    case 'multiply': {
-                        stack.push(op);
-                        stack.push(OpNumber(number));
-                    } break;
-                    default: {
-                        assert(false, "unhandled type: " + op?.type);
-                    } break;
-                }
-            } else {
-                switch (ch) {
-                    case 'x': {
-                        const op = stack.pop();
-                        switch (op?.type) {
-                            case undefined: {
-                                return console.error(`computeCommand: x (multiply) expected number but got an empty stack`);
-                            } break;
-                            case 'number': {
-                                stack.push(OpMultiply(op.value));
-                            } break;
-                            default: {
-                                return console.error(`computeCommand: x (multiply) expected number but got operator: ${op?.type}`);
-                            } break;
-                        }
-                    } break;
-                    default: {
-                        return console.error(`computeCommand: unexpected symbol: '${ch}'`)
-                    } break;
-                }
-            }
-        }
-        /** compute parsed operations */
-        while (stack.length > 0) {
-            const op = stack.pop();
-            switch (op?.type) {
-                case undefined: {
-                    return console.error(`computeCommand: got undefined operator`);
-                } break;
-                case 'number': {
-                    const modifier = stack.pop();
-                    switch (modifier?.type) {
-                        case undefined: {
-                            addProduct(op.value);
-                        } break;
-                        case 'number': {
-                            return console.error(`computeCommand: got consectives number`);
-                        } break;
-                        case 'multiply': {
-                            for (let i = 0; i < modifier.value; i++) {
-                                const found = await addProduct(op.value);
-                                if (!found) break;
-                            }
-                        } break;
-                        default: {
-                            return console.error(`computeCommand: unhandled operator type: ${op?.type}`);
-                        } break;
-                    }
-                } break;
-                case 'multiply': {
-                    return console.error(`computeCommand: unexpected operator type: ${op?.type}`);
-                } break;
-            }
-        }
-    }
 
     function createProductTableRow(product) {
         const tr = document.createElement("tr");
@@ -148,10 +57,12 @@ import {assert} from "../toolbox.js";
         }
     }
 
+    executorUse.addProduct = addProduct;
+
     document.addEventListener('keydown', async (e) => {
         switch (e.key) {
             case 'Enter': {
-                computeCommand(input.value);
+                execute(input.value);
                 input.value = "";
             } break;
             case 'Backspace': {
