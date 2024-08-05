@@ -68,6 +68,9 @@ import {executorUse, execute} from "./executor.js";
             case 'Backspace': {
                 input.value = input.value.slice(0, -1);
             } break;
+            case 'Escape': {
+                input.value = "";
+            } break;
             default: {
                 input.value += e.key;
             } break;
