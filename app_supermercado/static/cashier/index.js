@@ -4,10 +4,16 @@ import {executorUse, execute} from "./executor.js";
 (function() {
     const form = document.getElementById("form");
     const input = document.getElementById("input");
+
     const codeInput = document.getElementById("code-input");
     const nameInput = document.getElementById("name-input");
+
     const priceInput = document.getElementById("price-input");
+    const totalInput = document.getElementById("total-input");
+
     const productTableBody = document.getElementById("product-table-body");
+
+    let totalPrice = 0;
 
     function createProductTableRow(product) {
         const tr = document.createElement("tr");
@@ -30,6 +36,9 @@ import {executorUse, execute} from "./executor.js";
     function addProductIntoList(product, table) {
         const tableRow = createProductTableRow(product);
         table.appendChild(tableRow);
+
+        totalPrice += Number(product.price);
+        totalInput.value = totalPrice.toFixed(2);
     }
 
     async function getProduct(code) {
@@ -81,4 +90,5 @@ import {executorUse, execute} from "./executor.js";
     codeInput.value = '';
     nameInput.value = '';
     priceInput.value = '';
+    totalInput.value = '';
 })();
