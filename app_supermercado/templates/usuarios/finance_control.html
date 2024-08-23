@@ -3,9 +3,186 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Controle Financeiro</title>
+    <title>Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-    
+    <h1>Dashboard</h1>
+
+    <label for="year-select">Selecione o Ano:</label>
+    <select id="year-select">
+        <option value="2023">2023</option>
+        <option value="2024">2024</option>
+        <option value="2025">2025</option>
+        <option value="2026">2026</option>
+        <option value="2027">2027</option>
+        <option value="2028">2028</option>
+        <option value="2029">2029</option>
+        <option value="2030">2030</option>
+    </select>
+
+    <canvas id="productsChart" width="400" height="200"></canvas>
+    <canvas id="receiptsChart" width="400" height="200"></canvas>
+    <canvas id="distributionChart" width="400" height="200"></canvas>
+    <canvas id="monthlyValueChart" width="400" height="200"></canvas>
+
+    <script>
+        let productsChart, receiptsChart, distributionChart, monthlyValueChart;
+
+        async function fetchData(url) {
+            try {
+                const response = await fetch(url);
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return await response.json();
+            } catch (error) {
+                console.error('Error fetching data:', error);
+                return { labels: [], data: [] };
+            }
+        }
+
+        function destroyCharts() {
+            if (productsChart) productsChart.destroy();
+            if (receiptsChart) receiptsChart.destroy();
+            if (distributionChart) distributionChart.destroy();
+            if (monthlyValueChart) monthlyValueChart.destroy();
+        }
+
+        async function renderCharts(year) {
+            const productsData = await fetchData(`/products-data/${year}/`);
+            const receiptsData = await fetchData(`/receipts-data/${year}/`);
+            const distributionData = await fetchData(`/product-distribution-data/${year}/`);
+            const monthlyValueData = await fetchData(`/monthly-product-value/${year}/`);
+
+            destroyCharts(); // Destroi os gráficos antigos
+
+            // Gráfico de Barras - Produtos
+            const ctxProducts = document.getElementById('productsChart').getContext('2d');
+            productsChart = new Chart(ctxProducts, {
+                type: 'bar',
+                data: {
+                    labels: productsData.labels,
+                    datasets: [{
+                        label: 'Quantidade de Produtos',
+                        data: productsData.data,
+                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+
+            // Gráfico de Linha - Receitas
+            const ctxReceipts = document.getElementById('receiptsChart').getContext('2d');
+            receiptsChart = new Chart(ctxReceipts, {
+                type: 'line',
+                data: {
+                    labels: receiptsData.labels,
+                    datasets: [{
+                        label: 'Quantidade de Receitas por Data',
+                        data: receiptsData.data,
+                        backgroundColor: 'rgba(153, 102, 255, 0.2)',
+                        borderColor: 'rgba(153, 102, 255, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+
+            // Gráfico de Setores - Distribuição de Produtos
+            const ctxDistribution = document.getElementById('distributionChart').getContext('2d');
+            distributionChart = new Chart(ctxDistribution, {
+                type: 'pie',
+                data: {
+                    labels: distributionData.labels,
+                    datasets: [{
+                        label: 'Distribuição de Produtos',
+                        data: distributionData.data,
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.2)',
+                            'rgba(54, 162, 235, 0.2)',
+                            'rgba(255, 206, 86, 0.2)',
+                            'rgba(75, 192, 192, 0.2)',
+                            'rgba(153, 102, 255, 0.2)',
+                            'rgba(255, 159, 64, 0.2)'
+                        ],
+                        borderColor: [
+                            'rgba(255, 99, 132, 1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(255, 206, 86, 1)',
+                            'rgba(75, 192, 192, 1)',
+                            'rgba(153, 102, 255, 1)',
+                            'rgba(255, 159, 64, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(tooltipItem) {
+                                    return tooltipItem.label + ': ' + tooltipItem.raw;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Gráfico de Linha - Valores Mensais dos Produtos
+            const ctxMonthlyValue = document.getElementById('monthlyValueChart').getContext('2d');
+            monthlyValueChart = new Chart(ctxMonthlyValue, {
+                type: 'line',
+                data: {
+                    labels: monthlyValueData.labels,
+                    datasets: [{
+                        label: 'Valor Total dos Produtos por Mês',
+                        data: monthlyValueData.data,
+                        backgroundColor: 'rgba(255, 159, 64, 0.2)',
+                        borderColor: 'rgba(255, 159, 64, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+
+        // Atualiza os gráficos quando o ano é selecionado
+        document.getElementById('year-select').addEventListener('change', function() {
+            const selectedYear = this.value;
+            renderCharts(selectedYear);
+        });
+
+        // Renderiza os gráficos com o ano padrão ao carregar a página
+        document.addEventListener('DOMContentLoaded', function() {
+            const defaultYear = document.getElementById('year-select').value;
+            renderCharts(defaultYear);
+        });
+    </script>
 </body>
 </html>
