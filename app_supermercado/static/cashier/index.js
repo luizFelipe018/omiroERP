@@ -14,18 +14,24 @@ import {executorUse, execute} from "./executor.js";
     const productTableBody = document.getElementById("product-table-body");
 
     let totalPrice = 0;
+    let productCount = 1;
 
     function createProductTableRow(product) {
         const tr = document.createElement("tr");
 
+        const tdCount = document.createElement("td");
         const tdName = document.createElement("td");
         const tdCode = document.createElement("td");
         const tdPrice = document.createElement("td");
+
+        tdCount.innerHTML = "#" + productCount;
+        productCount += 1;
 
         tdName.innerHTML = product.name;
         tdCode.innerHTML = product.code;
         tdPrice.innerHTML = product.price;
 
+        tr.appendChild(tdCount);
         tr.appendChild(tdName);
         tr.appendChild(tdCode);
         tr.appendChild(tdPrice);
