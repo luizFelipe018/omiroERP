@@ -72,7 +72,12 @@ import {executorUse, execute} from "./executor.js";
         }
     }
 
+    function remProduct(expectedId) {
+        console.log("todo: remove: ", expectedId);
+    }
+
     executorUse.addProduct = addProduct;
+    executorUse.remProduct = remProduct;
 
     document.addEventListener('keydown', async (e) => {
         switch (e.key) {

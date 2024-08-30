@@ -1,24 +1,25 @@
-import {assert} from "../toolbox.js";
+import {assert} from '../toolbox.js';
 
 export const executorUse = {
     addProduct: undefined,
+    remProduct: undefined,
 };
 
 function num(value) {
     return {
-        type: "number",
+        type: 'number',
         value,
     };
 }
 
 function mul(value) {
     return {
-        type: "multiply",
+        type: 'multiply',
         value,
         async callback(arg) {
             assert(arg?.type === 'number', 'mul: unexpected type: ' + arg?.type);
             for (let i = 0; i < value; i++) {
-                assert(executorUse.addProduct, "missing use.addProduct callback");
+                assert(executorUse.addProduct, 'missing use.addProduct callback');
                 let result = executorUse.addProduct(arg.value);
                 if (result instanceof Promise) {
                     result = await result;
@@ -26,6 +27,19 @@ function mul(value) {
                 if (!result) break;
             }
         },
+    };
+}
+
+function rem() {
+    return {
+        type: 'remove',
+        value: null,
+        async callback(op) {
+            const type = op?.type;
+            assert(type === 'number', 'rem: unexpected type: ' + type);
+            assert(executorUse.remProduct, 'missing use.remProduct callback');
+            executorUse.remProduct(op.value);
+        }
     };
 }
 
@@ -55,8 +69,11 @@ function parse(stack, string) {
             }
             stack.push(mul(pop.value));
         } break;
+        case 'r': {
+            stack.push(rem());
+        } break;
         default: {
-            console.error("unknown operator (" + c + ")");
+            console.error('unknown operator (' + c + ')');
             return false;
         } break;
     }
@@ -73,9 +90,13 @@ function execute_(stack) {
             if (modifier?.callback) {
                 modifier.callback(op);
             } else {
-                assert(executorUse.addProduct, "missing use.addProduct callback");
+                assert(executorUse.addProduct, 'missing use.addProduct callback');
                 const _ = executorUse.addProduct(op.value);
             }
+        } break;
+        case 'remove': {
+            console.error('(r) operator expected id after');
+            return false;
         } break;
         default: {
             console.error('evaluating unexpected operator type: ' + op?.type)
