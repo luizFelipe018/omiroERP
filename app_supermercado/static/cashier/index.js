@@ -1,5 +1,6 @@
 import {assert} from "../toolbox.js";
 import {executorUse, execute} from "./executor.js";
+import ProductList, {Product} from "./productList.js";
 
 (function() {
     const form = document.getElementById("form");
@@ -11,12 +12,10 @@ import {executorUse, execute} from "./executor.js";
     const priceInput = document.getElementById("price-input");
     const totalInput = document.getElementById("total-input");
 
+    const productList = new ProductList();
     const productTableBody = document.getElementById("product-table-body");
 
-    let totalPrice = 0;
-    let productCount = 1;
-
-    function createProductTableRow(product) {
+    function createProductTableRow(id, product) {
         const tr = document.createElement("tr");
 
         const tdCount = document.createElement("td");
@@ -24,8 +23,7 @@ import {executorUse, execute} from "./executor.js";
         const tdCode = document.createElement("td");
         const tdPrice = document.createElement("td");
 
-        tdCount.innerHTML = "#" + productCount;
-        productCount += 1;
+        tdCount.innerHTML = "#" + id;
 
         tdName.innerHTML = product.name;
         tdCode.innerHTML = product.code;
@@ -39,12 +37,14 @@ import {executorUse, execute} from "./executor.js";
         return tr;
     }
 
-    function addProductIntoList(product, table) {
-        const tableRow = createProductTableRow(product);
-        table.appendChild(tableRow);
-
-        totalPrice += Number(product.price);
-        totalInput.value = totalPrice.toFixed(2);
+    function updateProductTable() {
+        const table = productTableBody;
+        table.innerHTML = '';
+        for (const [id, product] of productList.values()) {
+            const row = createProductTableRow(id, product);
+            table.appendChild(row);
+        }
+        totalInput.value = productList.price();
     }
 
     async function getProduct(code) {
@@ -60,11 +60,15 @@ import {executorUse, execute} from "./executor.js";
 
     async function addProduct(code) {
         try {
-            const product = await getProduct(code);
+            const product = new Product(await getProduct(code));
+
+            productList.add(product);
+
             codeInput.value = product.code;
             nameInput.value = product.name;
             priceInput.value = product.price;
-            addProductIntoList(product, productTableBody);
+
+            updateProductTable()
             return true;
         } catch (e) {
             alert(e);
@@ -73,7 +77,9 @@ import {executorUse, execute} from "./executor.js";
     }
 
     function remProduct(expectedId) {
-        console.log("todo: remove: ", expectedId);
+        const removed = productList.remove(expectedId);
+        updateProductTable();
+        return removed;
     }
 
     executorUse.addProduct = addProduct;
